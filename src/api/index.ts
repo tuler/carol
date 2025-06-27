@@ -1,7 +1,7 @@
 import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 import { and, eq, graphql } from "ponder";
-import { db } from "ponder:api";
+import { type config, db } from "ponder:api";
 import schema, {
     application,
     epoch,
@@ -25,13 +25,18 @@ const DEFAULT_LIMIT = 10000;
 const DEFAULT_OFFSET = 0;
 type EpochStatus = (typeof epochStatus)["enumValues"][number];
 
-const service = {
+const service = (chainId: number) => ({
     async getApplication(params: { application: string }) {
         if (isAddress(params.application)) {
             const [app] = await db
                 .select()
                 .from(application)
-                .where(eq(application.id, params.application));
+                .where(
+                    and(
+                        eq(application.chainId, chainId),
+                        eq(application.id, params.application),
+                    ),
+                );
             if (app) {
                 return {
                     iapplication_address: app.id,
@@ -64,6 +69,7 @@ const service = {
             .from(epoch)
             .where(
                 and(
+                    eq(epoch.chainId, chainId),
                     eq(epoch.applicationId, params.application),
                     eq(epoch.index, index),
                 ),
@@ -88,9 +94,13 @@ const service = {
         const applications = await db
             .select()
             .from(application)
+            .where(eq(application.chainId, chainId))
             .limit(limit)
             .offset(offset);
-        const total_count = await db.$count(application);
+        const total_count = await db.$count(
+            application,
+            eq(application.chainId, chainId),
+        );
         return {
             data: applications.map((app) => ({
                 iapplication_address: app.id,
@@ -129,6 +139,7 @@ const service = {
             .from(epoch)
             .where(
                 and(
+                    eq(epoch.chainId, chainId),
                     eq(epoch.applicationId, application),
                     status ? eq(epoch.status, status) : undefined,
                 ),
@@ -137,7 +148,10 @@ const service = {
             .offset(offset);
         const total_count = await db.$count(
             epoch,
-            eq(epoch.applicationId, application),
+            and(
+                eq(epoch.chainId, chainId),
+                eq(epoch.applicationId, application),
+            ),
         );
 
         return {
@@ -191,6 +205,7 @@ const service = {
             : undefined;
 
         const filter = and(
+            eq(input.chainId, chainId),
             eq(input.applicationId, getAddress(application)),
             epochIndex ? eq(input.epochId, epochIndex) : undefined,
             sender ? eq(input.msgSender, getAddress(sender)) : undefined,
@@ -227,11 +242,23 @@ const service = {
             },
         };
     },
+});
+
+type Chain = keyof config["default"]["chains"];
+
+const services = {
+    mainnet: service(1),
+    sepolia: service(11155111),
 };
 
-app.post("/rpc", zValidator("json", jsonRpcRequestSchema), async (c) => {
+app.post("/:chain/rpc", zValidator("json", jsonRpcRequestSchema), async (c) => {
+    const chain = c.req.param("chain") as Chain;
+    const service = services[chain];
+    if (!service) {
+        return c.json({ error: "Invalid chain" }, 404);
+    }
     const body = c.req.valid("json");
-    const result = await handleRpc(body, service);
+    const result = await handleRpc(body, services[chain]);
     return c.json(result);
 });
 

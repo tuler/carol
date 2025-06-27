@@ -16,14 +16,14 @@
     "dependencies": {
         "@hono/zod-validator": "^0.7.0",
         "hono": "^4.8.3",
-        "ponder": "^0.11.21",
+        "ponder": "^0.11.22",
         "typed-rpc": "^6.1.1",
         "viem": "^2.31.4",
         "winston": "^3.17.0",
         "zod": "^3.25.67"
     },
     "devDependencies": {
-        "@biomejs/biome": "2.0.5",
+        "@biomejs/biome": "2.0.6",
         "@types/node": "^24.0.4",
         "rimraf": "^6.0.1",
         "typescript": "^5.8.3"
@@ -31,5 +31,5 @@
     "engines": {
         "node": ">=22"
     },
-    "packageManager": "pnpm@10.12.3"
+    "packageManager": "pnpm@10.12.4"
 }

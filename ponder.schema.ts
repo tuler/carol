@@ -1,21 +1,36 @@
 import { onchainEnum, onchainTable, primaryKey, relations } from "ponder";
 
-export const application = onchainTable("application", (t) => ({
-    id: t.hex().primaryKey(),
-    templateHash: t.hex().notNull(),
-    owner: t.hex().notNull(),
-}));
+export const application = onchainTable(
+    "application",
+    (t) => ({
+        chainId: t.integer().notNull(),
+        id: t.hex().notNull(),
+        templateHash: t.hex().notNull(),
+        owner: t.hex().notNull(),
+    }),
+    (table) => ({
+        pk: primaryKey({ columns: [table.chainId, table.id] }),
+    }),
+);
 
-export const daveConsensus = onchainTable("dave_consensus", (t) => ({
-    id: t.hex().primaryKey(),
-    applicationId: t.hex(),
-}));
+export const daveConsensus = onchainTable(
+    "dave_consensus",
+    (t) => ({
+        chainId: t.integer().notNull(),
+        id: t.hex().notNull(),
+        applicationId: t.hex(),
+    }),
+    (table) => ({
+        pk: primaryKey({ columns: [table.chainId, table.id] }),
+    }),
+);
 
 export const epochStatus = onchainEnum("status", ["OPEN", "SEALED", "CLOSED"]);
 
 export const epoch = onchainTable(
     "epoch",
     (t) => ({
+        chainId: t.integer().notNull(),
         applicationId: t.hex().notNull(),
         index: t.bigint().notNull(),
         firstBlock: t.bigint().notNull(),
@@ -23,7 +38,9 @@ export const epoch = onchainTable(
         status: epochStatus().notNull().default("OPEN"),
     }),
     (table) => ({
-        pk: primaryKey({ columns: [table.applicationId, table.index] }),
+        pk: primaryKey({
+            columns: [table.chainId, table.applicationId, table.index],
+        }),
     }),
 );
 
@@ -43,11 +60,11 @@ export const epochRelations = relations(epoch, ({ many, one }) => ({
 export const input = onchainTable(
     "input",
     (t) => ({
+        chainId: t.integer().notNull(),
         applicationId: t.hex().notNull(),
         epochId: t.bigint().notNull(),
         index: t.bigint().notNull(),
         blockNumber: t.bigint().notNull(),
-        chainId: t.bigint().notNull(),
         blockTimestamp: t.bigint().notNull(),
         prevRandao: t.bigint().notNull(),
         msgSender: t.hex().notNull(),
@@ -55,7 +72,9 @@ export const input = onchainTable(
         payload: t.hex().notNull(),
     }),
     (table) => ({
-        pk: primaryKey({ columns: [table.applicationId, table.index] }),
+        pk: primaryKey({
+            columns: [table.chainId, table.applicationId, table.index],
+        }),
     }),
 );
 

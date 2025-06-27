@@ -8,6 +8,7 @@ ponder.on(
     "ApplicationFactory:ApplicationCreated",
     async ({ event, context }) => {
         await context.db.insert(application).values({
+            chainId: context.chain.id,
             id: event.args.appContract,
             owner: event.args.appOwner,
             templateHash: event.args.templateHash,
@@ -16,10 +17,16 @@ ponder.on(
 );
 
 ponder.on("Application:OwnershipTransferred", async ({ event, context }) => {
-    const app = await context.db.find(application, { id: event.log.address });
+    const app = await context.db.find(application, {
+        chainId: context.chain.id,
+        id: event.log.address,
+    });
     if (app) {
         await context.db
-            .update(application, { id: event.log.address })
+            .update(application, {
+                chainId: context.chain.id,
+                id: event.log.address,
+            })
             .set({ owner: event.args.newOwner });
     }
 });
@@ -28,6 +35,7 @@ ponder.on(
     "DaveConsensusFactory:DaveConsensusCreated",
     async ({ event, context }) => {
         await context.db.insert(daveConsensus).values({
+            chainId: context.chain.id,
             id: event.args.daveConsensus,
         });
     },
@@ -40,6 +48,7 @@ ponder.on("DaveConsensus:ConsensusCreation", async ({ event, context }) => {
     await context.db
         .insert(daveConsensus)
         .values({
+            chainId: context.chain.id,
             applicationId: event.args.appContract,
             id: event.log.address,
         })
@@ -51,13 +60,17 @@ ponder.on(
     async ({ event, context }) => {
         // we don't know if new validator is a DaveConsensus, try it
         const consensus = await context.db.find(daveConsensus, {
+            chainId: context.chain.id,
             id: event.args.newOutputsMerkleRootValidator,
         });
         if (consensus) {
             // new consensus is a (previously instantiated) DaveConsensus
             // set applicationId to the emmiter of the event
             await context.db
-                .update(daveConsensus, { id: consensus.id })
+                .update(daveConsensus, {
+                    chainId: context.chain.id,
+                    id: consensus.id,
+                })
                 .set({ applicationId: event.log.address });
         }
     },
@@ -65,6 +78,7 @@ ponder.on(
 
 ponder.on("DaveConsensus:EpochSealed", async ({ event, context }) => {
     const consensus = await context.db.find(daveConsensus, {
+        chainId: context.chain.id,
         id: event.log.address,
     });
     if (consensus?.applicationId) {
@@ -72,12 +86,17 @@ ponder.on("DaveConsensus:EpochSealed", async ({ event, context }) => {
 
         // close the previous epoch
         const previousEpoch = await context.db.find(epoch, {
+            chainId: context.chain.id,
             applicationId,
             index: event.args.epochNumber - 1n,
         });
         if (previousEpoch) {
             await context.db
-                .update(epoch, { applicationId, index: previousEpoch.index })
+                .update(epoch, {
+                    chainId: context.chain.id,
+                    applicationId,
+                    index: previousEpoch.index,
+                })
                 .set({
                     status: "CLOSED",
                 });
@@ -87,6 +106,7 @@ ponder.on("DaveConsensus:EpochSealed", async ({ event, context }) => {
         await context.db
             .insert(epoch)
             .values({
+                chainId: context.chain.id,
                 applicationId,
                 firstBlock: event.args.inputIndexLowerBound,
                 index: event.args.epochNumber,
@@ -101,6 +121,7 @@ ponder.on("DaveConsensus:EpochSealed", async ({ event, context }) => {
 
         // create a new open epoch
         await context.db.insert(epoch).values({
+            chainId: context.chain.id,
             applicationId,
             firstBlock: event.args.inputIndexUpperBound,
             index: event.args.epochNumber + 1n,
@@ -117,7 +138,11 @@ ponder.on("InputBox:InputAdded", async ({ event, context }) => {
         .select()
         .from(epoch)
         .where(
-            and(eq(epoch.applicationId, appContract), eq(epoch.status, "OPEN")),
+            and(
+                eq(epoch.chainId, context.chain.id),
+                eq(epoch.applicationId, appContract),
+                eq(epoch.status, "OPEN"),
+            ),
         );
     if (!openEpoch) {
         console.error(
@@ -141,7 +166,7 @@ ponder.on("InputBox:InputAdded", async ({ event, context }) => {
     // decode the input as a EvmAdvance
     const data = decodeFunctionData({ abi: InputsAbi, data: event.args.input });
     const [
-        chainId,
+        _chainId,
         _appContract2,
         msgSender,
         _blockNumber,
@@ -153,10 +178,10 @@ ponder.on("InputBox:InputAdded", async ({ event, context }) => {
 
     // create the input, associated to the open epoch
     await context.db.insert(input).values({
+        chainId: context.chain.id,
         applicationId: appContract,
         blockNumber: event.block.number,
         blockTimestamp,
-        chainId,
         epochId: openEpoch.index,
         index: index,
         msgSender: msgSender,

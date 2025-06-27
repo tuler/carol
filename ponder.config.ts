@@ -9,14 +9,20 @@ import { InputBoxAbi } from "./src/abis/InputBox";
 
 const inputBoxAddress = "0xc70074BDD26d8cF983Ca6A5b89b8db52D5850051";
 const applicationFactoryAddress = "0xc7006f70875BaDe89032001262A846D3Ee160051";
-const daveConsensusFactoryAddress =
+const daveConsensusFactoryAddressMainnet =
     "0x53DbCBcb9c2d8AF798dFeb8803B1a919AA2e1Eb4";
+const daveConsensusFactoryAddressSepolia =
+    "0x1c266ea4977fead5c830c472333b4537fc010a6d";
 
 export default createConfig({
     chains: {
         mainnet: {
             id: 1,
             rpc: process.env.PONDER_RPC_URL_1,
+        },
+        sepolia: {
+            id: 11155111,
+            rpc: process.env.PONDER_RPC_URL_11155111,
         },
     },
     contracts: {
@@ -35,14 +41,29 @@ export default createConfig({
                     }),
                     startBlock: 22595774,
                 },
+                sepolia: {
+                    address: factory({
+                        address: applicationFactoryAddress,
+                        event: getAbiItem({
+                            abi: ApplicationFactoryAbi,
+                            name: "ApplicationCreated",
+                        }),
+                        parameter: "appContract",
+                        startBlock: 8439338,
+                    }),
+                    startBlock: 8439338,
+                },
             },
         },
         ApplicationFactory: {
             abi: ApplicationFactoryAbi,
+            address: applicationFactoryAddress,
             chain: {
                 mainnet: {
-                    address: applicationFactoryAddress,
                     startBlock: 22595774,
+                },
+                sepolia: {
+                    startBlock: 8439338,
                 },
             },
         },
@@ -51,7 +72,7 @@ export default createConfig({
             chain: {
                 mainnet: {
                     address: factory({
-                        address: daveConsensusFactoryAddress,
+                        address: daveConsensusFactoryAddressMainnet,
                         event: getAbiItem({
                             abi: DaveConsensusFactoryAbi,
                             name: "DaveConsensusCreated",
@@ -61,23 +82,42 @@ export default createConfig({
                     }),
                     startBlock: 22670045,
                 },
+                sepolia: {
+                    address: factory({
+                        address: daveConsensusFactoryAddressSepolia,
+                        event: getAbiItem({
+                            abi: DaveConsensusFactoryAbi,
+                            name: "DaveConsensusCreated",
+                        }),
+                        parameter: "daveConsensus",
+                        startBlock: 8511228,
+                    }),
+                    startBlock: 8511228,
+                },
             },
         },
         DaveConsensusFactory: {
             abi: DaveConsensusFactoryAbi,
             chain: {
                 mainnet: {
-                    address: daveConsensusFactoryAddress,
+                    address: daveConsensusFactoryAddressMainnet,
                     startBlock: 22670045,
+                },
+                sepolia: {
+                    address: daveConsensusFactoryAddressSepolia,
+                    startBlock: 8511228,
                 },
             },
         },
         InputBox: {
             abi: InputBoxAbi,
+            address: inputBoxAddress,
             chain: {
                 mainnet: {
-                    address: inputBoxAddress,
                     startBlock: 22595776,
+                },
+                sepolia: {
+                    startBlock: 8439339,
                 },
             },
         },
