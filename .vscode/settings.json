@@ -1,0 +1,11 @@
+{
+    "editor.codeActionsOnSave": {
+        "source.action.useSortedKeys.biome": "explicit",
+        "source.fixAll.biome": "explicit",
+        "source.organizeImports.biome": "explicit"
+    },
+    "editor.defaultFormatter": "biomejs.biome",
+    "typescript.preferences.organizeImports": {
+        "accentCollation": true
+    }
+}

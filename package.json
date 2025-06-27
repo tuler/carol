@@ -1,0 +1,35 @@
+{
+    "name": "@tuler/carol",
+    "version": "0.1.0",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "codegen": "ponder codegen",
+        "db": "ponder db",
+        "dev": "ponder dev",
+        "dev:db:clean": "rimraf .ponder/pglite",
+        "lint": "biome check",
+        "lint:fix": "biome check --write",
+        "start": "ponder start",
+        "typecheck": "tsc"
+    },
+    "dependencies": {
+        "@hono/zod-validator": "^0.7.0",
+        "hono": "^4.8.3",
+        "ponder": "^0.11.21",
+        "typed-rpc": "^6.1.1",
+        "viem": "^2.31.4",
+        "winston": "^3.17.0",
+        "zod": "^3.25.67"
+    },
+    "devDependencies": {
+        "@biomejs/biome": "2.0.5",
+        "@types/node": "^24.0.4",
+        "rimraf": "^6.0.1",
+        "typescript": "^5.8.3"
+    },
+    "engines": {
+        "node": ">=22"
+    },
+    "packageManager": "pnpm@10.12.3"
+}
