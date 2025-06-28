@@ -1,0 +1,170 @@
+export const IAuthorityAbi = [
+    {
+        type: "function",
+        name: "getEpochLength",
+        inputs: [],
+        outputs: [{ name: "", type: "uint256", internalType: "uint256" }],
+        stateMutability: "view",
+    },
+    {
+        type: "function",
+        name: "isOutputsMerkleRootValid",
+        inputs: [
+            { name: "appContract", type: "address", internalType: "address" },
+            {
+                name: "outputsMerkleRoot",
+                type: "bytes32",
+                internalType: "bytes32",
+            },
+        ],
+        outputs: [{ name: "", type: "bool", internalType: "bool" }],
+        stateMutability: "view",
+    },
+    {
+        type: "function",
+        name: "owner",
+        inputs: [],
+        outputs: [{ name: "", type: "address", internalType: "address" }],
+        stateMutability: "view",
+    },
+    {
+        type: "function",
+        name: "renounceOwnership",
+        inputs: [],
+        outputs: [],
+        stateMutability: "nonpayable",
+    },
+    {
+        type: "function",
+        name: "submitClaim",
+        inputs: [
+            { name: "appContract", type: "address", internalType: "address" },
+            {
+                name: "lastProcessedBlockNumber",
+                type: "uint256",
+                internalType: "uint256",
+            },
+            {
+                name: "outputsMerkleRoot",
+                type: "bytes32",
+                internalType: "bytes32",
+            },
+        ],
+        outputs: [],
+        stateMutability: "nonpayable",
+    },
+    {
+        type: "function",
+        name: "supportsInterface",
+        inputs: [
+            { name: "interfaceId", type: "bytes4", internalType: "bytes4" },
+        ],
+        outputs: [{ name: "", type: "bool", internalType: "bool" }],
+        stateMutability: "view",
+    },
+    {
+        type: "function",
+        name: "transferOwnership",
+        inputs: [
+            { name: "newOwner", type: "address", internalType: "address" },
+        ],
+        outputs: [],
+        stateMutability: "nonpayable",
+    },
+    {
+        type: "event",
+        name: "ClaimAccepted",
+        inputs: [
+            {
+                name: "appContract",
+                type: "address",
+                indexed: true,
+                internalType: "address",
+            },
+            {
+                name: "lastProcessedBlockNumber",
+                type: "uint256",
+                indexed: false,
+                internalType: "uint256",
+            },
+            {
+                name: "outputsMerkleRoot",
+                type: "bytes32",
+                indexed: false,
+                internalType: "bytes32",
+            },
+        ],
+        anonymous: false,
+    },
+    {
+        type: "event",
+        name: "ClaimSubmitted",
+        inputs: [
+            {
+                name: "submitter",
+                type: "address",
+                indexed: true,
+                internalType: "address",
+            },
+            {
+                name: "appContract",
+                type: "address",
+                indexed: true,
+                internalType: "address",
+            },
+            {
+                name: "lastProcessedBlockNumber",
+                type: "uint256",
+                indexed: false,
+                internalType: "uint256",
+            },
+            {
+                name: "outputsMerkleRoot",
+                type: "bytes32",
+                indexed: false,
+                internalType: "bytes32",
+            },
+        ],
+        anonymous: false,
+    },
+    {
+        type: "error",
+        name: "NotEpochFinalBlock",
+        inputs: [
+            {
+                name: "lastProcessedBlockNumber",
+                type: "uint256",
+                internalType: "uint256",
+            },
+            { name: "epochLength", type: "uint256", internalType: "uint256" },
+        ],
+    },
+    {
+        type: "error",
+        name: "NotFirstClaim",
+        inputs: [
+            { name: "appContract", type: "address", internalType: "address" },
+            {
+                name: "lastProcessedBlockNumber",
+                type: "uint256",
+                internalType: "uint256",
+            },
+        ],
+    },
+    {
+        type: "error",
+        name: "NotPastBlock",
+        inputs: [
+            {
+                name: "lastProcessedBlockNumber",
+                type: "uint256",
+                internalType: "uint256",
+            },
+            {
+                name: "currentBlockNumber",
+                type: "uint256",
+                internalType: "uint256",
+            },
+        ],
+    },
+] as const;
