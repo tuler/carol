@@ -17,15 +17,29 @@ const daveConsensusFactoryAddressMainnet =
 const daveConsensusFactoryAddressSepolia =
     "0x1c266ea4977fead5c830c472333b4537fc010a6d";
 
+const http = (chainId: number, chainName: string) => {
+    return process.env.ALCHEMY_ID
+        ? `https://${chainName}.g.alchemy.com/v2/${process.env.ALCHEMY_ID}`
+        : process.env[`PONDER_RPC_URL_${chainId}`];
+};
+
+const ws = (chainId: number, chainName: string) => {
+    return process.env.ALCHEMY_ID
+        ? `wss://${chainName}.g.alchemy.com/v2/${process.env.ALCHEMY_ID}`
+        : process.env[`PONDER_WS_URL_${chainId}`];
+};
+
 export default createConfig({
     chains: {
         mainnet: {
             id: 1,
-            rpc: process.env.PONDER_RPC_URL_1,
+            rpc: http(1, "eth-mainnet"),
+            ws: ws(1, "eth-mainnet"),
         },
         sepolia: {
             id: 11155111,
-            rpc: process.env.PONDER_RPC_URL_11155111,
+            rpc: http(11155111, "eth-sepolia"),
+            ws: ws(11155111, "eth-sepolia"),
         },
     },
     contracts: {
