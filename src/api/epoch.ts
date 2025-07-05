@@ -1,10 +1,18 @@
 import { and, eq } from "ponder";
 import { db } from "ponder:api";
 import { epoch, type epochStatus } from "ponder:schema";
-import { hexToBigInt, isAddress, isHex, numberToHex } from "viem";
+import { numberToHex } from "viem";
 import { DEFAULT_LIMIT, DEFAULT_OFFSET } from ".";
+import { paramAsAddress, paramAsHexNumber } from "./validation";
 
 type EpochStatus = (typeof epochStatus)["enumValues"][number];
+
+const map = (ep: typeof epoch.$inferSelect) => {
+    return {
+        index: numberToHex(ep.index),
+        status: ep.status,
+    };
+};
 
 export const listEpochs =
     (chainId: number) =>
@@ -14,14 +22,9 @@ export const listEpochs =
         limit?: number;
         offset?: number;
     }) => {
-        if (!isAddress(params.application)) {
-            throw new Error(
-                `Invalid 'application' parameter: ${params.application}`,
-            );
-        }
+        const application = paramAsAddress(params, "application", true);
 
         const {
-            application,
             status,
             limit = DEFAULT_LIMIT,
             offset = DEFAULT_OFFSET,
@@ -48,10 +51,7 @@ export const listEpochs =
         );
 
         return {
-            data: epochs.map((epoch) => ({
-                index: numberToHex(epoch.index),
-                status: epoch.status,
-            })),
+            data: epochs.map(map),
             pagination: {
                 limit,
                 offset,
@@ -63,17 +63,8 @@ export const listEpochs =
 export const getEpoch =
     (chainId: number) =>
     async (params: { application: string; epoch_index: string }) => {
-        if (!isAddress(params.application)) {
-            throw new Error(
-                `Invalid 'application' parameter: ${params.application}`,
-            );
-        }
-        if (!isHex(params.epoch_index)) {
-            throw new Error(
-                `Invalid 'epoch_index' parameter: ${params.epoch_index}`,
-            );
-        }
-        const index = hexToBigInt(params.epoch_index);
+        const application = paramAsAddress(params, "application", true);
+        const epochIndex = paramAsHexNumber(params, "epoch_index", true);
 
         const [ep] = await db
             .select()
@@ -81,18 +72,15 @@ export const getEpoch =
             .where(
                 and(
                     eq(epoch.chainId, chainId),
-                    eq(epoch.applicationAddress, params.application),
-                    eq(epoch.index, index),
+                    eq(epoch.applicationAddress, application),
+                    eq(epoch.index, epochIndex),
                 ),
             );
+
         if (!ep) {
             throw new Error(
                 `Epoch not found: ${params.application} ${params.epoch_index}`,
             );
         }
-
-        return {
-            index: numberToHex(ep.index),
-            status: ep.status,
-        };
+        return { data: map(ep) };
     };

@@ -1,6 +1,6 @@
 import { ponder } from "ponder:registry";
 import { authorityConsensus } from "ponder:schema";
-import { AuthorityAbi } from "./abis/Authority";
+import { authorityAbi } from "./contracts";
 
 // handle authority creation through factory
 ponder.on("AuthorityFactory:AuthorityCreated", async ({ event, context }) => {
@@ -10,14 +10,14 @@ ponder.on("AuthorityFactory:AuthorityCreated", async ({ event, context }) => {
     );
     // query epoch length from chain, because it's not in the event
     const epochLength = await context.client.readContract({
-        abi: AuthorityAbi,
+        abi: authorityAbi,
         functionName: "getEpochLength",
         address: event.args.authority,
     });
 
     // query owner from chain, because it's not in the event
     const owner = await context.client.readContract({
-        abi: AuthorityAbi,
+        abi: authorityAbi,
         functionName: "owner",
         address: event.args.authority,
     });
@@ -32,7 +32,6 @@ ponder.on("AuthorityFactory:AuthorityCreated", async ({ event, context }) => {
             address: event.args.authority,
             owner,
             epochLength,
-            startBlock,
         })
         .onConflictDoNothing();
 });
@@ -44,6 +43,13 @@ ponder.on("Authority:OwnershipTransferred", async ({ event, context }) => {
         event.args,
     );
 
+    // query epoch length from chain, because it's not in the event
+    const epochLength = await context.client.readContract({
+        abi: authorityAbi,
+        functionName: "getEpochLength",
+        address: event.log.address,
+    });
+
     // upsert authority
     await context.db
         .insert(authorityConsensus)
@@ -51,8 +57,10 @@ ponder.on("Authority:OwnershipTransferred", async ({ event, context }) => {
             chainId: context.chain.id,
             address: event.log.address,
             owner: event.args.newOwner,
+            epochLength,
         })
         .onConflictDoUpdate({
             owner: event.args.newOwner,
+            epochLength,
         });
 });

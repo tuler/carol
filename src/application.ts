@@ -7,6 +7,7 @@ import {
     epoch,
     input,
 } from "ponder:schema";
+import { create } from "./machine";
 
 ponder.on(
     "ApplicationFactory:ApplicationCreated",
@@ -15,11 +16,23 @@ ponder.on(
             `ApplicationFactory(${event.log.address}):ApplicationCreated`,
             event.args,
         );
+
+        // try to instantiate the CM
+        try {
+            create(event.args.templateHash);
+        } catch {
+            console.log(
+                `fail loading machine for templateHash ${event.args.templateHash}`,
+            );
+        }
+
+        // create application
         await context.db.insert(application).values({
             chainId: context.chain.id,
             address: event.args.appContract,
             owner: event.args.appOwner,
             templateHash: event.args.templateHash,
+            dataAvailability: event.args.dataAvailability,
         });
 
         // create a new open epoch

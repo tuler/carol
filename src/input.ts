@@ -2,10 +2,11 @@ import { and, eq } from "ponder";
 import { ponder } from "ponder:registry";
 import { application, epoch, input } from "ponder:schema";
 import { decodeFunctionData } from "viem";
-import { InputsAbi } from "./abis/Inputs";
+import { inputsAbi } from "./contracts";
+import { execute } from "./machine";
 
 ponder.on("InputBox:InputAdded", async ({ event, context }) => {
-    const { appContract, index, input: payload } = event.args;
+    const { appContract, index, input: rawPayload } = event.args;
 
     const app = await context.db.find(application, {
         chainId: context.chain.id,
@@ -34,16 +35,16 @@ ponder.on("InputBox:InputAdded", async ({ event, context }) => {
     }
 
     // decode the input as a EvmAdvance
-    const data = decodeFunctionData({ abi: InputsAbi, data: event.args.input });
+    const data = decodeFunctionData({ abi: inputsAbi, data: rawPayload });
     const [
         _chainId,
-        _appContract2,
+        _appContract,
         msgSender,
         _blockNumber,
         blockTimestamp,
         prevRandao,
-        _index2,
-        payload2,
+        _index,
+        payload,
     ] = data.args;
 
     // create the input, associated to the open epoch
@@ -53,10 +54,20 @@ ponder.on("InputBox:InputAdded", async ({ event, context }) => {
         blockNumber: event.block.number,
         blockTimestamp,
         epochIndex: openEpoch.index,
-        index: index,
-        msgSender: msgSender,
-        payload: payload2,
+        index,
+        msgSender,
+        payload,
         prevRandao,
-        rawPayload: payload,
+        rawPayload,
+    });
+
+    // run the machine (if exists), storing outputs and reports
+    await execute({
+        context,
+        appContract,
+        epochIndex: openEpoch.index,
+        inputIndex: index,
+        templateHash: app.templateHash,
+        payload: rawPayload,
     });
 });

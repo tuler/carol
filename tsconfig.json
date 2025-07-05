@@ -2,7 +2,6 @@
     "compilerOptions": {
         // Type checking
         "strict": true,
-        "noUncheckedIndexedAccess": true,
 
         // Interop constraints
         "verbatimModuleSyntax": false,

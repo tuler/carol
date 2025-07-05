@@ -4,7 +4,9 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "codegen": "ponder codegen",
+        "codegen": "pnpm run codegen:wagmi && pnpm run codegen:ponder",
+        "codegen:wagmi": "wagmi generate",
+        "codegen:ponder": "ponder codegen",
         "db": "ponder db",
         "dev": "ponder dev",
         "dev:db:clean": "rimraf .ponder/pglite",
@@ -16,17 +18,19 @@
     },
     "dependencies": {
         "@hono/zod-validator": "^0.7.0",
-        "hono": "^4.8.3",
-        "ponder": "^0.11.24",
+        "@tuler/node-cartesi-machine": "^0.6.0",
+        "hono": "^4.8.4",
+        "ponder": "^0.11.27",
         "typed-rpc": "^6.1.1",
-        "viem": "^2.31.6",
+        "viem": "^2.31.7",
         "winston": "^3.17.0",
-        "zod": "^3.25.71"
+        "zod": "^3.25.75"
     },
     "devDependencies": {
-        "@biomejs/biome": "2.0.6",
+        "@biomejs/biome": "2.1.1",
         "@cartesi/rollups": "^2.0.1",
-        "@types/node": "^24.0.10",
+        "@types/node": "^24.0.13",
+        "@wagmi/cli": "^2.3.1",
         "rimraf": "^6.0.1",
         "typescript": "^5.8.3",
         "vitest": "^3.2.4"

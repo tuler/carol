@@ -7,8 +7,10 @@ import { handleRpc } from "typed-rpc/server";
 
 import { getApplication, listApplications } from "./application";
 import { getEpoch, listEpochs } from "./epoch";
-import { listInputs } from "./input";
+import { getInput, listInputs } from "./input";
+import { getOutput, listOutputs } from "./output";
 import { jsonRpcRequestSchema } from "./rcp-types";
+import { getReport, listReports } from "./report";
 
 const app = new Hono();
 
@@ -21,6 +23,11 @@ const service = (chainId: number) => ({
     listEpochs: listEpochs(chainId),
     getEpoch: getEpoch(chainId),
     listInputs: listInputs(chainId),
+    getInput: getInput(chainId),
+    listOutputs: listOutputs(chainId),
+    getOutput: getOutput(chainId),
+    listReports: listReports(chainId),
+    getReport: getReport(chainId),
 });
 
 type Chain = keyof config["default"]["chains"];

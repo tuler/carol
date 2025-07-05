@@ -1,13 +1,15 @@
 import { createConfig, factory } from "ponder";
 
 import { getAbiItem } from "viem";
-import { ApplicationAbi } from "./src/abis/Application";
-import { ApplicationFactoryAbi } from "./src/abis/ApplicationFactory";
-import { AuthorityAbi } from "./src/abis/Authority";
-import { AuthorityFactoryAbi } from "./src/abis/AuthorityFactory";
 import { DaveConsensusAbi } from "./src/abis/DaveConsensus";
 import { DaveConsensusFactoryAbi } from "./src/abis/DaveConsensusFactory";
-import { InputBoxAbi } from "./src/abis/InputBox";
+import {
+    applicationAbi,
+    applicationFactoryAbi,
+    authorityAbi,
+    authorityFactoryAbi,
+    inputBoxAbi,
+} from "./src/contracts";
 
 const inputBoxAddress = "0xc70074BDD26d8cF983Ca6A5b89b8db52D5850051";
 const applicationFactoryAddress = "0xc7006f70875BaDe89032001262A846D3Ee160051";
@@ -44,13 +46,13 @@ export default createConfig({
     },
     contracts: {
         Application: {
-            abi: ApplicationAbi,
+            abi: applicationAbi,
             chain: {
                 mainnet: {
                     address: factory({
                         address: applicationFactoryAddress,
                         event: getAbiItem({
-                            abi: ApplicationFactoryAbi,
+                            abi: applicationFactoryAbi,
                             name: "ApplicationCreated",
                         }),
                         parameter: "appContract",
@@ -62,7 +64,7 @@ export default createConfig({
                     address: factory({
                         address: applicationFactoryAddress,
                         event: getAbiItem({
-                            abi: ApplicationFactoryAbi,
+                            abi: applicationFactoryAbi,
                             name: "ApplicationCreated",
                         }),
                         parameter: "appContract",
@@ -73,7 +75,7 @@ export default createConfig({
             },
         },
         ApplicationFactory: {
-            abi: ApplicationFactoryAbi,
+            abi: applicationFactoryAbi,
             address: applicationFactoryAddress,
             chain: {
                 mainnet: {
@@ -85,13 +87,13 @@ export default createConfig({
             },
         },
         Authority: {
-            abi: AuthorityAbi,
+            abi: authorityAbi,
             chain: {
                 mainnet: {
                     address: factory({
                         address: authorityFactoryAddress,
                         event: getAbiItem({
-                            abi: AuthorityFactoryAbi,
+                            abi: authorityFactoryAbi,
                             name: "AuthorityCreated",
                         }),
                         parameter: "authority",
@@ -103,7 +105,7 @@ export default createConfig({
                     address: factory({
                         address: authorityFactoryAddress,
                         event: getAbiItem({
-                            abi: AuthorityFactoryAbi,
+                            abi: authorityFactoryAbi,
                             name: "AuthorityCreated",
                         }),
                         parameter: "authority",
@@ -114,7 +116,7 @@ export default createConfig({
             },
         },
         AuthorityFactory: {
-            abi: AuthorityFactoryAbi,
+            abi: authorityFactoryAbi,
             address: authorityFactoryAddress,
             chain: {
                 mainnet: {
@@ -168,7 +170,7 @@ export default createConfig({
             },
         },
         InputBox: {
-            abi: InputBoxAbi,
+            abi: inputBoxAbi,
             address: inputBoxAddress,
             chain: {
                 mainnet: {

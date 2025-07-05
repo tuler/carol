@@ -18,3 +18,7 @@ yarn-error.log*
 /.ponder/
 /abis/*.ts
 /deployment/
+/snapshots/
+
+# Wagmi
+/src/contracts.ts

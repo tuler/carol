@@ -1,6 +1,7 @@
 import { and, eq } from "ponder";
 import { ponder } from "ponder:registry";
 import { application, daveConsensus, epoch } from "ponder:schema";
+import { createProofs } from "./proof";
 
 ponder.on("DaveConsensus:EpochSealed", async ({ event, context }) => {
     console.log(`DaveConsensus(${event.log.address}):EpochSealed`, event.args);
@@ -8,6 +9,7 @@ ponder.on("DaveConsensus:EpochSealed", async ({ event, context }) => {
         chainId: context.chain.id,
         address: event.log.address,
     });
+
     if (dave?.applicationAddress) {
         const { applicationAddress } = dave;
 
@@ -27,6 +29,9 @@ ponder.on("DaveConsensus:EpochSealed", async ({ event, context }) => {
                 .set({
                     status: "CLOSED",
                 });
+
+            // generate proof for outputs belonging to closed epoch
+            await createProofs(context, previousEpoch);
         }
 
         // seal the open epoch (by index), or create if doesn't exist

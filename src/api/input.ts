@@ -1,15 +1,28 @@
 import { and, eq } from "ponder";
 import { db } from "ponder:api";
 import { input } from "ponder:schema";
-import {
-    getAddress,
-    type Hex,
-    hexToBigInt,
-    isAddress,
-    isHex,
-    numberToHex,
-} from "viem";
+import { getAddress, numberToHex } from "viem";
 import { DEFAULT_LIMIT, DEFAULT_OFFSET } from ".";
+import { paramAsAddress, paramAsHexNumber } from "./validation";
+
+const map = (i: typeof input.$inferSelect) => {
+    return {
+        block_number: numberToHex(i.blockNumber),
+        decoded_data: {
+            application_contract: i.applicationAddress,
+            block_number: numberToHex(i.blockNumber),
+            block_timestamp: numberToHex(i.blockTimestamp),
+            chain_id: numberToHex(i.chainId),
+            index: numberToHex(i.index),
+            payload: i.payload,
+            prev_randao: numberToHex(i.prevRandao),
+            sender: i.msgSender,
+        },
+        epoch_index: numberToHex(i.epochIndex),
+        index: numberToHex(i.index),
+        raw_data: i.rawPayload,
+    };
+};
 
 export const listInputs =
     (chainId: number) =>
@@ -20,30 +33,10 @@ export const listInputs =
         limit?: number;
         offset?: number;
     }) => {
-        if (!isAddress(params.application)) {
-            throw new Error(
-                `Invalid 'application' parameter: ${params.application}`,
-            );
-        }
-        if (params.epoch_index && !isHex(params.epoch_index)) {
-            throw new Error(
-                `Invalid 'epoch_index' parameter: ${params.epoch_index}`,
-            );
-        }
-        if (params.sender && !isAddress(params.sender)) {
-            throw new Error(`Invalid 'sender' parameter: ${params.sender}`);
-        }
-
-        const {
-            application,
-            epoch_index,
-            sender,
-            limit = DEFAULT_LIMIT,
-            offset = DEFAULT_OFFSET,
-        } = params;
-        const epochIndex = epoch_index
-            ? hexToBigInt(epoch_index as Hex)
-            : undefined;
+        const application = paramAsAddress(params, "application", true);
+        const epochIndex = paramAsHexNumber(params, "epoch_index");
+        const sender = paramAsAddress(params, "sender");
+        const { limit = DEFAULT_LIMIT, offset = DEFAULT_OFFSET } = params;
 
         const filter = and(
             eq(input.chainId, chainId),
@@ -60,26 +53,33 @@ export const listInputs =
         const total_count = await db.$count(input, filter);
 
         return {
-            data: inputs.map((input) => ({
-                block_number: numberToHex(input.blockNumber),
-                decoded_data: {
-                    application_contract: input.applicationAddress,
-                    block_number: numberToHex(input.blockNumber),
-                    block_timestamp: numberToHex(input.blockTimestamp),
-                    chain_id: numberToHex(input.chainId),
-                    index: numberToHex(input.index),
-                    payload: input.payload,
-                    prev_randao: numberToHex(input.prevRandao),
-                    sender: input.msgSender,
-                },
-                epoch_index: numberToHex(input.epochIndex),
-                index: numberToHex(input.index),
-                raw_data: input.rawPayload,
-            })),
+            data: inputs.map(map),
             pagination: {
                 limit,
                 offset,
                 total_count,
             },
         };
+    };
+
+export const getInput =
+    (chainId: number) =>
+    async (params: { application: string; input_index: string }) => {
+        const application = paramAsAddress(params, "application", true);
+        const inputIndex = paramAsHexNumber(params, "input_index", true);
+        const [i] = await db
+            .select()
+            .from(input)
+            .where(
+                and(
+                    eq(input.chainId, chainId),
+                    eq(input.applicationAddress, application),
+                    eq(input.index, inputIndex),
+                ),
+            );
+
+        if (!i) {
+            throw new Error(`Input not found: ${params.input_index}`);
+        }
+        return { data: map(i) };
     };

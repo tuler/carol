@@ -1,17 +1,5 @@
 import { onchainEnum, onchainTable, primaryKey, relations } from "ponder";
-
-export const application = onchainTable(
-    "application",
-    (t) => ({
-        chainId: t.integer().notNull(),
-        address: t.hex().notNull(),
-        templateHash: t.hex().notNull(),
-        owner: t.hex().notNull(),
-    }),
-    (table) => ({
-        pk: primaryKey({ columns: [table.chainId, table.address] }),
-    }),
-);
+import type { Hash } from "viem";
 
 export const authorityConsensus = onchainTable(
     "authority_consensus",
@@ -19,6 +7,7 @@ export const authorityConsensus = onchainTable(
         chainId: t.integer().notNull(),
         address: t.hex().notNull(),
         owner: t.hex().notNull(),
+        epochLength: t.bigint().notNull(),
     }),
     (table) => ({
         pk: primaryKey({ columns: [table.chainId, table.address] }),
@@ -31,6 +20,27 @@ export const daveConsensus = onchainTable(
         chainId: t.integer().notNull(),
         address: t.hex().notNull(),
         applicationAddress: t.hex(),
+    }),
+    (table) => ({
+        pk: primaryKey({ columns: [table.chainId, table.address] }),
+    }),
+);
+
+export const daveRelations = relations(daveConsensus, ({ one }) => ({
+    application: one(application, {
+        fields: [daveConsensus.applicationAddress],
+        references: [application.address],
+    }),
+}));
+
+export const application = onchainTable(
+    "application",
+    (t) => ({
+        chainId: t.integer().notNull(),
+        address: t.hex().notNull(),
+        templateHash: t.hex().notNull(),
+        owner: t.hex().notNull(),
+        dataAvailability: t.hex().notNull(),
     }),
     (table) => ({
         pk: primaryKey({ columns: [table.chainId, table.address] }),
@@ -61,8 +71,8 @@ export const applicationRelations = relations(application, ({ many }) => ({
 
 export const epochRelations = relations(epoch, ({ many, one }) => ({
     application: one(application, {
-        fields: [epoch.applicationAddress],
-        references: [application.address],
+        fields: [epoch.chainId, epoch.applicationAddress],
+        references: [application.chainId, application.address],
     }),
     inputs: many(input),
 }));
@@ -90,11 +100,87 @@ export const input = onchainTable(
 
 export const inputRelations = relations(input, ({ one }) => ({
     application: one(application, {
-        fields: [input.applicationAddress],
-        references: [application.address],
+        fields: [input.chainId, input.applicationAddress],
+        references: [application.chainId, application.address],
     }),
     epoch: one(epoch, {
-        fields: [input.applicationAddress, input.epochIndex],
-        references: [epoch.applicationAddress, epoch.index],
+        fields: [input.chainId, input.applicationAddress, input.epochIndex],
+        references: [epoch.chainId, epoch.applicationAddress, epoch.index],
+    }),
+}));
+
+export const output = onchainTable(
+    "output",
+    (t) => ({
+        chainId: t.integer().notNull(),
+        applicationAddress: t.hex().notNull(),
+        epochIndex: t.bigint().notNull(),
+        inputIndex: t.bigint().notNull(),
+        index: t.bigint().notNull(),
+        rawPayload: t.hex().notNull(),
+        voucherAddress: t.hex(),
+        proof: t.json().$type<Hash[]>(),
+    }),
+    (table) => ({
+        pk: primaryKey({
+            columns: [
+                table.chainId,
+                table.applicationAddress,
+                table.inputIndex,
+                table.index,
+            ],
+        }),
+    }),
+);
+
+export const outputRelations = relations(output, ({ one }) => ({
+    application: one(application, {
+        fields: [output.chainId, output.applicationAddress],
+        references: [application.chainId, application.address],
+    }),
+    epoch: one(epoch, {
+        fields: [output.chainId, output.applicationAddress, output.epochIndex],
+        references: [epoch.chainId, epoch.applicationAddress, epoch.index],
+    }),
+    input: one(input, {
+        fields: [output.chainId, output.applicationAddress, output.inputIndex],
+        references: [input.chainId, input.applicationAddress, input.index],
+    }),
+}));
+
+export const report = onchainTable(
+    "report",
+    (t) => ({
+        chainId: t.integer().notNull(),
+        applicationAddress: t.hex().notNull(),
+        epochIndex: t.bigint().notNull(),
+        inputIndex: t.bigint().notNull(),
+        index: t.bigint().notNull(),
+        rawPayload: t.hex().notNull(),
+    }),
+    (table) => ({
+        pk: primaryKey({
+            columns: [
+                table.chainId,
+                table.applicationAddress,
+                table.inputIndex,
+                table.index,
+            ],
+        }),
+    }),
+);
+
+export const reportRelations = relations(report, ({ one }) => ({
+    application: one(application, {
+        fields: [report.chainId, report.applicationAddress],
+        references: [application.chainId, application.address],
+    }),
+    epoch: one(epoch, {
+        fields: [report.chainId, report.applicationAddress, report.epochIndex],
+        references: [epoch.chainId, epoch.applicationAddress, epoch.index],
+    }),
+    input: one(input, {
+        fields: [report.chainId, report.applicationAddress, report.inputIndex],
+        references: [input.chainId, input.applicationAddress, input.index],
     }),
 }));
