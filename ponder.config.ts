@@ -16,8 +16,6 @@ const applicationFactoryAddress = "0xc7006f70875BaDe89032001262A846D3Ee160051";
 const authorityFactoryAddress = "0xC7003566dD09Aa0fC0Ce201aC2769aFAe3BF0051";
 const daveConsensusFactoryAddressMainnet =
     "0x53DbCBcb9c2d8AF798dFeb8803B1a919AA2e1Eb4";
-const daveConsensusFactoryAddressSepolia =
-    "0x1c266ea4977fead5c830c472333b4537fc010a6d";
 
 const http = (chainId: number, chainName: string) => {
     return process.env.ALCHEMY_ID
@@ -38,11 +36,6 @@ export default createConfig({
             rpc: http(1, "eth-mainnet"),
             ws: ws(1, "eth-mainnet"),
         },
-        sepolia: {
-            id: 11155111,
-            rpc: http(11155111, "eth-sepolia"),
-            ws: ws(11155111, "eth-sepolia"),
-        },
     },
     contracts: {
         Application: {
@@ -60,18 +53,6 @@ export default createConfig({
                     }),
                     startBlock: 22595774,
                 },
-                sepolia: {
-                    address: factory({
-                        address: applicationFactoryAddress,
-                        event: getAbiItem({
-                            abi: applicationFactoryAbi,
-                            name: "ApplicationCreated",
-                        }),
-                        parameter: "appContract",
-                        startBlock: 8439338,
-                    }),
-                    startBlock: 8439338,
-                },
             },
         },
         ApplicationFactory: {
@@ -80,9 +61,6 @@ export default createConfig({
             chain: {
                 mainnet: {
                     startBlock: 22595774,
-                },
-                sepolia: {
-                    startBlock: 8439338,
                 },
             },
         },
@@ -101,18 +79,6 @@ export default createConfig({
                     }),
                     startBlock: 22595775,
                 },
-                sepolia: {
-                    address: factory({
-                        address: authorityFactoryAddress,
-                        event: getAbiItem({
-                            abi: authorityFactoryAbi,
-                            name: "AuthorityCreated",
-                        }),
-                        parameter: "authority",
-                        startBlock: 8297796,
-                    }),
-                    startBlock: 8297796,
-                },
             },
         },
         AuthorityFactory: {
@@ -121,9 +87,6 @@ export default createConfig({
             chain: {
                 mainnet: {
                     startBlock: 22595775,
-                },
-                sepolia: {
-                    startBlock: 8297796,
                 },
             },
         },
@@ -142,18 +105,6 @@ export default createConfig({
                     }),
                     startBlock: 22670045,
                 },
-                sepolia: {
-                    address: factory({
-                        address: daveConsensusFactoryAddressSepolia,
-                        event: getAbiItem({
-                            abi: DaveConsensusFactoryAbi,
-                            name: "DaveConsensusCreated",
-                        }),
-                        parameter: "daveConsensus",
-                        startBlock: 8511228,
-                    }),
-                    startBlock: 8511228,
-                },
             },
         },
         DaveConsensusFactory: {
@@ -163,10 +114,6 @@ export default createConfig({
                     address: daveConsensusFactoryAddressMainnet,
                     startBlock: 22670045,
                 },
-                sepolia: {
-                    address: daveConsensusFactoryAddressSepolia,
-                    startBlock: 8511228,
-                },
             },
         },
         InputBox: {
@@ -175,9 +122,6 @@ export default createConfig({
             chain: {
                 mainnet: {
                     startBlock: 22595776,
-                },
-                sepolia: {
-                    startBlock: 8439339,
                 },
             },
         },
