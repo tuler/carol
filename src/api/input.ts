@@ -1,13 +1,16 @@
 import { and, eq } from "ponder";
 import { db } from "ponder:api";
 import { input } from "ponder:schema";
-import { getAddress, numberToHex } from "viem";
+import { getAddress, numberToHex, zeroHash } from "viem";
 import { DEFAULT_LIMIT, DEFAULT_OFFSET } from ".";
 import { paramAsAddress, paramAsHexNumber } from "./validation";
 
 const map = (i: typeof input.$inferSelect) => {
     return {
+        epoch_index: numberToHex(i.epochIndex),
+        index: numberToHex(i.index),
         block_number: numberToHex(i.blockNumber),
+        raw_data: i.rawPayload,
         decoded_data: {
             application_contract: i.applicationAddress,
             block_number: numberToHex(i.blockNumber),
@@ -18,9 +21,12 @@ const map = (i: typeof input.$inferSelect) => {
             prev_randao: numberToHex(i.prevRandao),
             sender: i.msgSender,
         },
-        epoch_index: numberToHex(i.epochIndex),
-        index: numberToHex(i.index),
-        raw_data: i.rawPayload,
+        status: i.status,
+        machine_hash: zeroHash, // TODO: get this from execitopm
+        outputs_hash: zeroHash, // TODO: get this from execution
+        transaction_reference: i.transactionHash,
+        created_at: new Date(Number(i.createdAt) * 1000).toISOString(),
+        updated_at: new Date(Number(i.updatedAt) * 1000).toISOString(),
     };
 };
 

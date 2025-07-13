@@ -54,6 +54,8 @@ const saveOutput = async (
         index: index,
         rawPayload,
         voucherAddress,
+        createdAt: args.timestamp,
+        updatedAt: args.timestamp,
     });
 };
 
@@ -68,6 +70,8 @@ const saveReport = async (
         inputIndex,
         index,
         rawPayload: bytesToHex(args.report),
+        createdAt: args.timestamp,
+        updatedAt: args.timestamp,
     });
 };
 
@@ -78,6 +82,7 @@ type ExecuteArgs = {
     inputIndex: bigint;
     templateHash: string;
     payload: Hex;
+    timestamp: bigint;
 };
 
 export const execute = async (args: ExecuteArgs) => {

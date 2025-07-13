@@ -8,9 +8,11 @@ import { paramAsAddress, paramAsHexNumber } from "./validation";
 const map = (r: typeof report.$inferSelect) => {
     return {
         epoch_index: numberToHex(r.epochIndex),
-        inputIndex: numberToHex(r.inputIndex),
+        input_index: numberToHex(r.inputIndex),
         index: numberToHex(r.index),
         raw_data: r.rawPayload,
+        created_at: new Date(Number(r.createdAt) * 1000).toISOString(),
+        updated_at: new Date(Number(r.updatedAt) * 1000).toISOString(),
     };
 };
 

@@ -1,7 +1,7 @@
 import { and, eq } from "ponder";
 import { db } from "ponder:api";
 import { epoch, type epochStatus } from "ponder:schema";
-import { numberToHex } from "viem";
+import { numberToHex, zeroHash } from "viem";
 import { DEFAULT_LIMIT, DEFAULT_OFFSET } from ".";
 import { paramAsAddress, paramAsHexNumber } from "./validation";
 
@@ -10,7 +10,14 @@ type EpochStatus = (typeof epochStatus)["enumValues"][number];
 const map = (ep: typeof epoch.$inferSelect) => {
     return {
         index: numberToHex(ep.index),
+        first_block: numberToHex(0), // XXX: does not make sense for PRT
+        last_block: numberToHex(0), // XXX: does not make sense for PRT
+        claim_hash: ep.claimHash,
+        claim_transaction_hash: zeroHash, // XXX: don't know how to get this
         status: ep.status,
+        virtual_index: numberToHex(ep.index), // XXX: same as index for PRT
+        created_at: new Date(Number(ep.createdAt) * 1000).toISOString(),
+        updated_at: new Date(Number(ep.updatedAt) * 1000).toISOString(),
     };
 };
 

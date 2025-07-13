@@ -33,6 +33,8 @@ ponder.on(
             owner: event.args.appOwner,
             templateHash: event.args.templateHash,
             dataAvailability: event.args.dataAvailability,
+            createdAt: event.block.timestamp,
+            updatedAt: event.block.timestamp,
         });
 
         // create a new open epoch
@@ -42,6 +44,8 @@ ponder.on(
             index: 0n,
             firstBlock: event.block.number,
             status: "OPEN",
+            createdAt: event.block.timestamp,
+            updatedAt: event.block.timestamp,
         });
     },
 );

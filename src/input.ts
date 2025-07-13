@@ -59,6 +59,9 @@ ponder.on("InputBox:InputAdded", async ({ event, context }) => {
         payload,
         prevRandao,
         rawPayload,
+        transactionHash: event.transaction.hash,
+        createdAt: event.block.timestamp,
+        updatedAt: event.block.timestamp,
     });
 
     // run the machine (if exists), storing outputs and reports
@@ -69,5 +72,6 @@ ponder.on("InputBox:InputAdded", async ({ event, context }) => {
         inputIndex: index,
         templateHash: app.templateHash,
         payload: rawPayload,
+        timestamp: event.block.timestamp,
     });
 });

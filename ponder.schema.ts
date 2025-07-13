@@ -41,13 +41,19 @@ export const application = onchainTable(
         templateHash: t.hex().notNull(),
         owner: t.hex().notNull(),
         dataAvailability: t.hex().notNull(),
+        createdAt: t.bigint().notNull(),
+        updatedAt: t.bigint().notNull(),
     }),
     (table) => ({
         pk: primaryKey({ columns: [table.chainId, table.address] }),
     }),
 );
 
-export const epochStatus = onchainEnum("status", ["OPEN", "SEALED", "CLOSED"]);
+export const epochStatus = onchainEnum("epoch_status", [
+    "OPEN",
+    "SEALED",
+    "CLOSED",
+]);
 
 export const epoch = onchainTable(
     "epoch",
@@ -55,7 +61,11 @@ export const epoch = onchainTable(
         chainId: t.integer().notNull(),
         applicationAddress: t.hex().notNull(),
         index: t.bigint().notNull(),
+        tournamentAddress: t.hex(),
+        claimHash: t.hex(),
         status: epochStatus().notNull().default("OPEN"),
+        createdAt: t.bigint().notNull(),
+        updatedAt: t.bigint().notNull(),
     }),
     (table) => ({
         pk: primaryKey({
@@ -77,6 +87,18 @@ export const epochRelations = relations(epoch, ({ many, one }) => ({
     inputs: many(input),
 }));
 
+export const inputStatus = onchainEnum("input_status", [
+    "NONE",
+    "ACCEPTED",
+    "REJECTED",
+    "EXCEPTION",
+    "MACHINE_HALTED",
+    "OUTPUTS_LIMIT_EXCEEDED",
+    "CYCLE_LIMIT_EXCEEDED",
+    "TIME_LIMIT_EXCEEDED",
+    "PAYLOAD_LENGTH_LIMIT_EXCEEDED",
+]);
+
 export const input = onchainTable(
     "input",
     (t) => ({
@@ -90,6 +112,10 @@ export const input = onchainTable(
         msgSender: t.hex().notNull(),
         rawPayload: t.hex().notNull(),
         payload: t.hex().notNull(),
+        status: inputStatus().notNull().default("NONE"),
+        transactionHash: t.hex().notNull(),
+        createdAt: t.bigint().notNull(),
+        updatedAt: t.bigint().notNull(),
     }),
     (table) => ({
         pk: primaryKey({
@@ -120,6 +146,8 @@ export const output = onchainTable(
         rawPayload: t.hex().notNull(),
         voucherAddress: t.hex(),
         proof: t.json().$type<Hash[]>(),
+        createdAt: t.bigint().notNull(),
+        updatedAt: t.bigint().notNull(),
     }),
     (table) => ({
         pk: primaryKey({
@@ -157,6 +185,8 @@ export const report = onchainTable(
         inputIndex: t.bigint().notNull(),
         index: t.bigint().notNull(),
         rawPayload: t.hex().notNull(),
+        createdAt: t.bigint().notNull(),
+        updatedAt: t.bigint().notNull(),
     }),
     (table) => ({
         pk: primaryKey({

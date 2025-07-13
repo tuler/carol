@@ -1,7 +1,7 @@
 import { and, eq } from "ponder";
 import { db } from "ponder:api";
 import { application } from "ponder:schema";
-import { decodeFunctionData, numberToHex } from "viem";
+import { decodeFunctionData, numberToHex, zeroAddress } from "viem";
 import { DEFAULT_LIMIT, DEFAULT_OFFSET } from ".";
 import { dataAvailabilityAbi } from "../contracts";
 import { paramAsAddress } from "./validation";
@@ -24,11 +24,18 @@ const map = (app: typeof application.$inferSelect) => {
     return {
         name: app.address,
         iapplication_address: app.address,
+        iconsensus_address: zeroAddress, // XXX: relation to consensus
         inputbox_address,
         template_hash: app.templateHash,
         epoch_length: numberToHex(10), // XXX: does not make sense for PRT
         data_availability: app.dataAvailability,
         state: "DISABLED",
+        iinputbox_block: numberToHex(0), // XXX: does not make sense for PRT
+        last_input_check_block: numberToHex(0), // XXX: does not make sense for PRT
+        last_output_check_block: numberToHex(0), // XXX: does not make sense for PRT
+        processed_inputs: numberToHex(0), // XXX: not implemented
+        created_at: new Date(Number(app.createdAt) * 1000).toISOString(),
+        updated_at: new Date(Number(app.updatedAt) * 1000).toISOString(),
     };
 };
 
