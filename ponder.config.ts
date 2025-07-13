@@ -6,14 +6,11 @@ import { DaveConsensusFactoryAbi } from "./src/abis/DaveConsensusFactory";
 import {
     applicationAbi,
     applicationFactoryAbi,
-    authorityAbi,
-    authorityFactoryAbi,
     inputBoxAbi,
 } from "./src/contracts";
 
 const inputBoxAddress = "0xc70074BDD26d8cF983Ca6A5b89b8db52D5850051";
 const applicationFactoryAddress = "0xc7006f70875BaDe89032001262A846D3Ee160051";
-const authorityFactoryAddress = "0xC7003566dD09Aa0fC0Ce201aC2769aFAe3BF0051";
 const daveConsensusFactoryAddressMainnet =
     "0x53DbCBcb9c2d8AF798dFeb8803B1a919AA2e1Eb4";
 
@@ -64,32 +61,6 @@ export default createConfig({
                 },
             },
         },
-        Authority: {
-            abi: authorityAbi,
-            chain: {
-                mainnet: {
-                    address: factory({
-                        address: authorityFactoryAddress,
-                        event: getAbiItem({
-                            abi: authorityFactoryAbi,
-                            name: "AuthorityCreated",
-                        }),
-                        parameter: "authority",
-                        startBlock: 22595775,
-                    }),
-                    startBlock: 22595775,
-                },
-            },
-        },
-        AuthorityFactory: {
-            abi: authorityFactoryAbi,
-            address: authorityFactoryAddress,
-            chain: {
-                mainnet: {
-                    startBlock: 22595775,
-                },
-            },
-        },
         DaveConsensus: {
             abi: DaveConsensusAbi,
             chain: {
@@ -103,15 +74,6 @@ export default createConfig({
                         parameter: "daveConsensus",
                         startBlock: 22670045,
                     }),
-                    startBlock: 22670045,
-                },
-            },
-        },
-        DaveConsensusFactory: {
-            abi: DaveConsensusFactoryAbi,
-            chain: {
-                mainnet: {
-                    address: daveConsensusFactoryAddressMainnet,
                     startBlock: 22670045,
                 },
             },

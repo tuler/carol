@@ -1,13 +1,5 @@
-import { and, eq } from "ponder";
 import { ponder } from "ponder:registry";
-import {
-    application,
-    authorityConsensus,
-    daveConsensus,
-    epoch,
-    input,
-    output,
-} from "ponder:schema";
+import { application, epoch, output } from "ponder:schema";
 import { create } from "./machine";
 
 ponder.on(
@@ -69,61 +61,6 @@ ponder.on("Application:OwnershipTransferred", async ({ event, context }) => {
             .set({ owner: event.args.newOwner });
     }
 });
-
-ponder.on(
-    "Application:OutputsMerkleRootValidatorChanged",
-    async ({ event, context }) => {
-        console.log(
-            `Application(${event.log.address}):OutputsMerkleRootValidatorChanged`,
-            event.args,
-        );
-        // check if app already have inputs, and reject if so
-        const inputCount = await context.db.sql.$count(
-            input,
-            and(
-                eq(input.chainId, context.chain.id),
-                eq(input.applicationAddress, event.log.address),
-            ),
-        );
-        if (inputCount > 0) {
-            console.error(
-                `Application:OutputsMerkleRootValidatorChanged not supported by Application with inputs`,
-            );
-
-            // TODO: disable application, because it's in a state that is not supported
-            // XXX: this will probably fail, because there are references to this application in other tables
-            return;
-        }
-
-        // we don't know if new validator is a DaveConsensus, try it
-        const dave = await context.db.find(daveConsensus, {
-            chainId: context.chain.id,
-            address: event.args.newOutputsMerkleRootValidator,
-        });
-        if (dave) {
-            // new consensus is a (previously instantiated) DaveConsensus
-            // set applicationId to the emmiter of the event
-            await context.db
-                .update(daveConsensus, {
-                    chainId: context.chain.id,
-                    address: dave.address,
-                })
-                .set({ applicationAddress: event.log.address });
-            return;
-        }
-
-        const auth = await context.db.find(authorityConsensus, {
-            chainId: context.chain.id,
-            address: event.args.newOutputsMerkleRootValidator,
-        });
-        if (auth) {
-            console.error(
-                `Application:OutputsMerkleRootValidatorChanged not supported by Application with authority consensus`,
-            );
-            // TODO: handle epoch?
-        }
-    },
-);
 
 ponder.on("Application:OutputExecuted", async ({ event, context }) => {
     console.log(`Application(${event.log.address}):OutputExecuted`, event.args);

@@ -1,43 +1,12 @@
 import { onchainEnum, onchainTable, primaryKey, relations } from "ponder";
 import type { Hash } from "viem";
 
-export const authorityConsensus = onchainTable(
-    "authority_consensus",
-    (t) => ({
-        chainId: t.integer().notNull(),
-        address: t.hex().notNull(),
-        owner: t.hex().notNull(),
-        epochLength: t.bigint().notNull(),
-    }),
-    (table) => ({
-        pk: primaryKey({ columns: [table.chainId, table.address] }),
-    }),
-);
-
-export const daveConsensus = onchainTable(
-    "dave_consensus",
-    (t) => ({
-        chainId: t.integer().notNull(),
-        address: t.hex().notNull(),
-        applicationAddress: t.hex(),
-    }),
-    (table) => ({
-        pk: primaryKey({ columns: [table.chainId, table.address] }),
-    }),
-);
-
-export const daveRelations = relations(daveConsensus, ({ one }) => ({
-    application: one(application, {
-        fields: [daveConsensus.applicationAddress],
-        references: [application.address],
-    }),
-}));
-
 export const application = onchainTable(
     "application",
     (t) => ({
         chainId: t.integer().notNull(),
         address: t.hex().notNull(),
+        daveConsensusAddress: t.hex(),
         templateHash: t.hex().notNull(),
         owner: t.hex().notNull(),
         dataAvailability: t.hex().notNull(),
