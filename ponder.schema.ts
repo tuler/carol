@@ -146,17 +146,13 @@ export const output = onchainTable(
         rawPayload: t.hex().notNull(),
         voucherAddress: t.hex(),
         proof: t.json().$type<Hash[]>(),
+        executionTransactionHash: t.hex(),
         createdAt: t.bigint().notNull(),
         updatedAt: t.bigint().notNull(),
     }),
     (table) => ({
         pk: primaryKey({
-            columns: [
-                table.chainId,
-                table.applicationAddress,
-                table.inputIndex,
-                table.index,
-            ],
+            columns: [table.chainId, table.applicationAddress, table.index],
         }),
     }),
 );

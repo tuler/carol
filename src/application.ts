@@ -6,6 +6,7 @@ import {
     daveConsensus,
     epoch,
     input,
+    output,
 } from "ponder:schema";
 import { create } from "./machine";
 
@@ -123,3 +124,14 @@ ponder.on(
         }
     },
 );
+
+ponder.on("Application:OutputExecuted", async ({ event, context }) => {
+    console.log(`Application(${event.log.address}):OutputExecuted`, event.args);
+    context.db
+        .update(output, {
+            chainId: context.chain.id,
+            applicationAddress: event.log.address,
+            index: event.args.outputIndex,
+        })
+        .set({ executionTransactionHash: event.transaction.hash });
+});

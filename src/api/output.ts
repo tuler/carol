@@ -9,7 +9,6 @@ import {
     keccak256,
     numberToHex,
     slice,
-    zeroHash,
 } from "viem";
 import { DEFAULT_LIMIT, DEFAULT_OFFSET } from ".";
 import { outputsAbi } from "../contracts";
@@ -47,7 +46,7 @@ const map = (o: typeof output.$inferSelect) => {
         decoded_data,
         hash: keccak256(o.rawPayload),
         output_hashes_siblings: o.proof,
-        execution_transaction_hash: zeroHash, // TODO: monitor execution
+        execution_transaction_hash: o.executionTransactionHash,
         created_at: new Date(Number(o.createdAt) * 1000).toISOString(),
         updated_at: new Date(Number(o.updatedAt) * 1000).toISOString(),
     };
