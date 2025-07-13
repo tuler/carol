@@ -18,16 +18,16 @@ export const DEFAULT_LIMIT = 10000;
 export const DEFAULT_OFFSET = 0;
 
 const service = (chainId: number) => ({
-    listApplications: listApplications(chainId),
-    getApplication: getApplication(chainId),
-    listEpochs: listEpochs(chainId),
-    getEpoch: getEpoch(chainId),
-    listInputs: listInputs(chainId),
-    getInput: getInput(chainId),
-    listOutputs: listOutputs(chainId),
-    getOutput: getOutput(chainId),
-    listReports: listReports(chainId),
-    getReport: getReport(chainId),
+    cartesi_listApplications: listApplications(chainId),
+    cartesi_getApplication: getApplication(chainId),
+    cartesi_listEpochs: listEpochs(chainId),
+    cartesi_getEpoch: getEpoch(chainId),
+    cartesi_listInputs: listInputs(chainId),
+    cartesi_getInput: getInput(chainId),
+    cartesi_listOutputs: listOutputs(chainId),
+    cartesi_getOutput: getOutput(chainId),
+    cartesi_listReports: listReports(chainId),
+    cartesi_getReport: getReport(chainId),
 });
 
 type Chain = keyof config["default"]["chains"];
