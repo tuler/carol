@@ -23,8 +23,7 @@
         "ponder": "^0.11.27",
         "typed-rpc": "^6.1.1",
         "viem": "^2.31.7",
-        "winston": "^3.17.0",
-        "zod": "^3.25.75"
+        "zod": "^4.0.5"
     },
     "devDependencies": {
         "@biomejs/biome": "2.1.1",
@@ -38,5 +37,5 @@
     "engines": {
         "node": ">=22"
     },
-    "packageManager": "pnpm@10.12.4"
+    "packageManager": "pnpm@10.13.1"
 }
