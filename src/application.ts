@@ -23,7 +23,6 @@ ponder.on(
         await context.db.insert(application).values({
             chainId: context.chain.id,
             address: event.args.appContract,
-            owner: event.args.appOwner,
             templateHash: event.args.templateHash,
             dataAvailability: event.args.dataAvailability,
             createdAt: event.block.timestamp,
@@ -42,25 +41,6 @@ ponder.on(
         });
     },
 );
-
-ponder.on("Application:OwnershipTransferred", async ({ event, context }) => {
-    console.log(
-        `Application(${event.log.address}):OwnershipTransferred`,
-        event.args,
-    );
-    const app = await context.db.find(application, {
-        chainId: context.chain.id,
-        address: event.log.address,
-    });
-    if (app) {
-        await context.db
-            .update(application, {
-                chainId: context.chain.id,
-                address: event.log.address,
-            })
-            .set({ owner: event.args.newOwner });
-    }
-});
 
 ponder.on("Application:OutputExecuted", async ({ event, context }) => {
     console.log(`Application(${event.log.address}):OutputExecuted`, event.args);

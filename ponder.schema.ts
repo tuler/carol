@@ -8,7 +8,6 @@ export const application = onchainTable(
         address: t.hex().notNull(),
         daveConsensusAddress: t.hex(),
         templateHash: t.hex().notNull(),
-        owner: t.hex().notNull(),
         dataAvailability: t.hex().notNull(),
         createdAt: t.bigint().notNull(),
         updatedAt: t.bigint().notNull(),
