@@ -52,7 +52,6 @@ export const createProofs = async (
             .update(output, {
                 chainId: o.chainId,
                 applicationAddress: o.applicationAddress,
-                inputIndex: o.inputIndex,
                 index: o.index,
             })
             .set({
