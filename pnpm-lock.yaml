@@ -9,11 +9,11 @@ importers:
   .:
     dependencies:
       '@hono/zod-validator':
-        specifier: ^0.7.0
-        version: 0.7.0(hono@4.8.4)(zod@4.0.5)
+        specifier: ^0.7.1
+        version: 0.7.1(hono@4.8.4)(zod@4.0.5)
       '@tuler/node-cartesi-machine':
-        specifier: ^0.6.0
-        version: 0.6.0
+        specifier: ^0.7.0
+        version: 0.7.0
       hono:
         specifier: ^4.8.4
         version: 4.8.4
@@ -497,11 +497,11 @@ packages:
     peerDependencies:
       hono: ^4
 
-  '@hono/zod-validator@0.7.0':
-    resolution: {integrity: sha512-qe2ZE6sHFE98dcUrbYMtS3bAV8hqcCOflykvZga2S7XhmNSZzT+dIz4OuMILsjLHkJw9JMn912/dB7dQOmuPvg==}
+  '@hono/zod-validator@0.7.1':
+    resolution: {integrity: sha512-8+vJT1RvezAx5sN7hiZ5Mis0RMuFL77nBEcqQQgT9ufoLkxr+7ll461WlBJQcGoQSY6EGMClVae19v3s/7bbgQ==}
     peerDependencies:
       hono: '>=3.9.0'
-      zod: ^3.25.0
+      zod: ^3.25.0 || ^4.0.0
 
   '@isaacs/cliui@8.0.2':
     resolution: {integrity: sha512-O8jcjabXaleOG9DQ0+ARXWZBTfnP4WNAqzuiJK7ll44AmxGKv/J2M4TPjxjY3znBCfvBXFzucm1twdyFybFqEA==}
@@ -651,8 +651,8 @@ packages:
   '@scure/bip39@1.6.0':
     resolution: {integrity: sha512-+lF0BbLiJNwVlev4eKelw1WWLaiKXw7sSl8T6FvBlWkdX+94aGJ4o8XjUdlyhTCjd8c+B3KT3JfS8P0bLRNU6A==}
 
-  '@tuler/node-cartesi-machine@0.6.0':
-    resolution: {integrity: sha512-CjjJMWYEOkMx3X0YXOPTTYCP91hwRRAajj9FbgJRkYST1WvTwwFcWQZdizUAqy982rhxkHQ6jix3U1JjeQGDvw==}
+  '@tuler/node-cartesi-machine@0.7.0':
+    resolution: {integrity: sha512-CKPzdWpcZHySFVHVPCfaKtSAqDcpfib4xXT04o0ewgMqMvSsSCtUf9YKAnAk7cL8pXngnF3xE2pDGLaxOQBHWw==}
 
   '@types/chai@5.2.2':
     resolution: {integrity: sha512-8kB30R7Hwqf40JPiKhVzodJs2Qc1ZJ5zuT3uzw5Hq/dhNCl3G3l83jfpdI1e20BP348+fV7VIL/+FxaXkqBmWg==}
@@ -2022,7 +2022,7 @@ snapshots:
     dependencies:
       hono: 4.8.4
 
-  '@hono/zod-validator@0.7.0(hono@4.8.4)(zod@4.0.5)':
+  '@hono/zod-validator@0.7.1(hono@4.8.4)(zod@4.0.5)':
     dependencies:
       hono: 4.8.4
       zod: 4.0.5
@@ -2132,7 +2132,7 @@ snapshots:
       '@noble/hashes': 1.8.0
       '@scure/base': 1.2.6
 
-  '@tuler/node-cartesi-machine@0.6.0':
+  '@tuler/node-cartesi-machine@0.7.0':
     dependencies:
       koffi: 2.12.1
 
