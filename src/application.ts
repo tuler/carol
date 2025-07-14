@@ -64,11 +64,16 @@ ponder.on("Application:OwnershipTransferred", async ({ event, context }) => {
 
 ponder.on("Application:OutputExecuted", async ({ event, context }) => {
     console.log(`Application(${event.log.address}):OutputExecuted`, event.args);
-    context.db
-        .update(output, {
-            chainId: context.chain.id,
-            applicationAddress: event.log.address,
-            index: event.args.outputIndex,
-        })
-        .set({ executionTransactionHash: event.transaction.hash });
+    try {
+        await context.db
+            .update(output, {
+                chainId: context.chain.id,
+                applicationAddress: event.log.address,
+                index: event.args.outputIndex,
+            })
+            .set({ executionTransactionHash: event.transaction.hash });
+    } catch {
+        // ignore if output doesn't exist
+        // it may be an output of an application that we don't have the machine for
+    }
 });
